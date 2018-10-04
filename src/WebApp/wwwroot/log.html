@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Log</title>
+   
+</head>
+<body>
+    <h1>Log</h1>
+    <div class="log-container">
+        <p>&nbsp;</p>
+    </div>
+    <script src="/lib/jquery/dist/jquery.js"></script>
+    <script src="/lib/signalr/signalr.js"></script>
+    <script src="/lib/msgpack5/dist/msgpack5.js"></script>
+    <script src="/lib/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
+    
+    <script type="text/javascript">
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/connector/action')
+            .withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+       
+        
+         function log(msg) {
+             $p = $('.log-container p');
+             $p.append('<span>' + msg+'</span><br />')
+         }
+        
+         connection.start().then(function () {
+             console.log('start...');
+
+             connection.invoke("JoinLog");
+
+             
+         }).catch (err => console.error(err.toString()));
+
+        
+         connection.on('log', function (message) {
+             console.log('log...');
+             log(message)
+         });
+
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "@aspnet/signalr-protocol-msgpack@1.0.3",
+      "destination": "wwwroot/lib/signalr-protocol-msgpack/",
+      "files": [
+        "dist/browser/signalr-protocol-msgpack.js",
+        "dist/browser/signalr-protocol-msgpack.js.map",
+        "dist/browser/signalr-protocol-msgpack.min.js",
+        "dist/browser/signalr-protocol-msgpack.min.js.map"
+      ]
+    },
+    {
+      "library": "msgpack5@4.2.1",
+      "destination": "wwwroot/lib/msgpack5/",
+      "files": [
+        "dist/msgpack5.js",
+        "dist/msgpack5.min.js"
+      ]
+    }
+  ]
+}

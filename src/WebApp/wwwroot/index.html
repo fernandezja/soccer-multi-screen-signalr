@@ -1,0 +1,144 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Soccer</title>
+    <link href="/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #ffffff;
+        }
+
+        .text-important {
+            font-weight:bold;
+            font-size:1.3em;
+        }
+        .status-indicator {
+            width:20px;
+            height:20px;
+            float:right;
+            background-color:fuchsia;
+            margin:5px;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="court"></canvas>
+
+    <div class="container-fluid">
+        <div class="row status-bar">
+            <div class="col-md-4">
+                My screen: <span class="text-important shortScreenId">----</span>
+                <div class="status-indicator"></div>
+            </div>
+            <div class="col-md-6">
+                <input type="button" name="btnPlugToScreen" id="btnPlugToScreen" value="Plug" /> to screen
+                <input type="text" name="txtPlugToScreenId" id="txtPlugToScreenId" value="" class="col-6" />
+                <input type="button" name="btnCenterBall" id="btnCenterBall" value="[O]" />
+            </div>
+            <div class="col-md-4">
+                <span class="message"></span>
+            </div>
+        </div>
+    </div>
+
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script src="/lib/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="/lib/matter/matter.min.js"></script>
+    <script src="/lib/hammer/hammer.min.js"></script>
+
+    <script src="/lib/signalr/signalr.js"></script>
+    <script src="/lib/msgpack5/dist/msgpack5.js"></script>
+    <script src="/lib/signalr-protocol-msgpack/dist/browser/signalr-protocol-msgpack.js"></script>
+
+    <script src="/app.js"></script>
+    <script src="/ballPool.js"></script>
+
+    <script>
+        Hammer.Swipe.prototype.velocity = 0.1;
+
+        //hammer
+        var court = document.getElementById('court');
+        var hammer = new Hammer(court);
+        hammer.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+
+        var config = {
+            screenId: null,
+            canvas: court,
+            width: window.innerWidth,
+            height: window.innerHeight * 0.9,
+            externalMove: false,
+            moveCallback: function (point) {
+                
+            },
+            border: {
+                top: true,
+                right: true,
+                bottom: true,
+                left: true
+            }
+        }
+
+        var ball = Example.ballPool(config);
+
+
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl('/connector/action')
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        connection.on('dragTo', function (moveToItem) {
+            //actions
+        });
+
+        connection.on('match', function (mosaicItem) {
+            //actions...
+        });
+
+        var blinkTimeout = null;
+
+        function blink(color) {
+            clearTimeout(blinkTimeout);
+            $('.status-indicator').css('background-color', color);
+            blinkTimeout = setTimeout(function () {
+                $('.status-indicator').css('background-color', 'white');
+            }, 1000);
+        }
+
+        connection.start().then(function () {
+            //actions...
+        }).catch(err => console.error(err.toString()));
+
+
+
+
+        $(function () {
+            $('#btnPlugToScreen').click(function () {
+                var $txt = $('#txtPlugToScreenId');
+                if ($txt.val().length) {
+                    app.setPlugOn($txt.val());
+                    $('.status-bar .message').html("Arrastre su pantalla para conectarse...")
+                } else {
+                    app.setPlugOff();
+                    $('.status-bar .message').html("Ingrese el id de pantalla para conectarse")
+                }
+
+            });
+
+            $('#btnCenterBall').click(function () {
+                ball.center();
+            });
+            
+        });
+
+    </script>
+</body>
+
+</html>

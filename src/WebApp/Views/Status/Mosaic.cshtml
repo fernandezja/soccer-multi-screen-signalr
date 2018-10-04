@@ -1,0 +1,60 @@
+﻿@using Ogyke.Core
+@using WebApp.Code;
+@model MosaicStoreManager
+
+@{
+    ViewData["Title"] = "Mosaic";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+
+}
+
+<h2>Mosaic</h2
+
+<ul>
+    @foreach (var app in Model.MosaicStore.Apps)
+    {
+    <text>
+        <li>
+            <span>Mosaic: @app.Id</span><br />
+            <ul>
+                @foreach(var item in app.Items){
+                <text>
+                <li>
+                    Item <br />
+                    Screen Id: @item.Screen.Id<br />
+
+                    @if(@item.NeighborTop!=null){
+                <text>
+                Neighbor Top: @item.NeighborTop.Screen.Id<br />
+                </text>
+                    }
+
+                    @if(@item.NeighborRight!=null){
+                <text>
+                Neighbor Right: @item.NeighborRight.Screen.Id<br />
+                </text>
+                    }
+                    @if(@item.NeighborBottom!=null){
+                <text>
+                Neighbor Bottom: @item.NeighborBottom.Screen.Id<br />
+                </text>
+                    }
+                    @if(@item.NeighborLeft!=null){
+                <text>
+                Neighbor Left: @item.NeighborLeft.Screen.Id<br />
+                </text>
+                    }
+
+
+                </li>
+                </text>
+                }
+               
+            </ul>
+
+        </li>
+    </text>
+    }
+</ul>
+
