@@ -27,17 +27,15 @@ namespace WebApp
 
             services.AddSingleton<MosaicStoreManager>();
 
-            services.AddSignalR()
-                    .AddAzureSignalR(options =>
-                    {
-                        options.ConnectionCount = 15;
-                        options.AccessTokenLifetime = TimeSpan.FromDays(1);
-                        //options.ClaimsProvider = context => context.User.Claims;
-                    });
+            services.AddSignalR();
+                    //.AddAzureSignalR();
+                    //.AddAzureSignalR(options =>
+                    //{
+                    //    options.ConnectionCount = 15;
+                    //    options.AccessTokenLifetime = TimeSpan.FromDays(1);
+                    //    //options.ClaimsProvider = context => context.User.Claims;
+                    //});
                     //.AddMessagePackProtocol();
-                    
-
-            
 
             services.AddMvc();
         }
@@ -65,8 +63,8 @@ namespace WebApp
                     template: "{controller=Home}/{action=Index}/{id?}");
             });
 
-            //app.UseSignalR(routes =>
-            app.UseAzureSignalR(routes =>
+            app.UseSignalR(routes =>
+            //app.UseAzureSignalR(routes =>
             {
                 routes.MapHub<WebApp.Code.Action>("/connector/action");
             });

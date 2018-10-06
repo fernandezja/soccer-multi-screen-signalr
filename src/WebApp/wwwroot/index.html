@@ -91,15 +91,24 @@
 
         const connection = new signalR.HubConnectionBuilder()
             .withUrl('/connector/action')
+            //.withHubProtocol(new signalR.protocols.msgpack.MessagePackHubProtocol())
             .configureLogging(signalR.LogLevel.Information)
             .build();
 
         connection.on('dragTo', function (moveToItem) {
-            //actions
+            if (moveToItem.screenIdOrigin !== app.getScreenId()) {
+                ball.move(moveToItem.x, moveToItem.y);
+            }
+
         });
 
         connection.on('match', function (mosaicItem) {
-            //actions...
+            console.log('match...');
+            console.log(mosaicItem);
+            $('.status-bar .message').html('');
+            blink('red');
+            ball.redraw(mosaicItem);
+
         });
 
         var blinkTimeout = null;
@@ -113,7 +122,42 @@
         }
 
         connection.start().then(function () {
-            //actions...
+            app.init();
+
+            config.screenId = app.getScreenId();
+
+            app.uiRefresh();
+
+            app.message(null, 'ScreenId:' + app.getScreenId());
+
+            connection.invoke("Init", app.getScreenId(), config.width || 0, config.height || 0);
+
+            config.moveCallback = function (point) {
+                //app.message(point, 'move');
+                connection.invoke("DragTo", app.getScreenId(), point.x || 0, point.y || 0);
+            }
+
+            hammer.on('swipe', async function (ev) {
+
+                console.log('swipe direct... direction > ' + ev.direction)
+
+                if (app.isPlugOn()) {
+
+                    console.log('swipe direct... direction > ' + ev.direction)
+
+                    var swipeActionToScreen = {
+                        screenId: app.getScreenId(),
+                        direction: ev.direction,
+                        toScreenIdShort: app.getPlugOnToScreenIdShort()
+                    };
+
+                    connection.invoke("SwipeDirect", swipeActionToScreen);
+
+                    blink('yellow');
+
+                    app.setPlugOff();
+                }
+            });
         }).catch(err => console.error(err.toString()));
 
 
